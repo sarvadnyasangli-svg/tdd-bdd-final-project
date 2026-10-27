@@ -207,3 +207,37 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(found.count(), count)
         for product in found:
             self.assertEqual(product.category, category)
+
+    def test_find_by_price(self):
+        """It should Find Products by Price"""
+        products = ProductFactory.create_batch(5)
+        for product in products:
+            product.id = None
+            product.create()
+        price = products[0].price
+        count = len([product for product in products if product.price == price])
+        found = Product.find_by_price(price)
+        self.assertEqual(found.count(), count)
+        for product in found:
+            self.assertEqual(product.price, price)
+        found = Product.find_by_price(str(price))
+        self.assertEqual(found.count(), count)
+
+    def test_deserialize_bad_available(self):
+        """It should not Deserialize a bad available attribute"""
+        data = ProductFactory().serialize()
+        data["available"] = "true"
+        product = Product()
+        self.assertRaises(DataValidationError, product.deserialize, data)
+
+    def test_deserialize_bad_category(self):
+        """It should not Deserialize a bad category attribute"""
+        data = ProductFactory().serialize()
+        data["category"] = "NOT_A_CATEGORY"
+        product = Product()
+        self.assertRaises(DataValidationError, product.deserialize, data)
+
+    def test_deserialize_no_data(self):
+        """It should not Deserialize with no data"""
+        product = Product()
+        self.assertRaises(DataValidationError, product.deserialize, None)

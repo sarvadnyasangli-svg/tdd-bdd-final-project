@@ -9,7 +9,7 @@ from service.models import Product, Category
 class ProductFactory(factory.Factory):
     """Creates fake products for testing"""
 
-    class Meta:
+    class Meta:  # pylint: disable=too-few-public-methods
         """Maps factory to data model"""
 
         model = Product
